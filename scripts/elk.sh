@@ -34,8 +34,8 @@ sudo apt -y update
 #***********************************************************
 #Install Elasticsearch and Kibana
 #***********************************************************
-sudo apt install -y elasticsearch=7.3.2
-sudo apt install -y kibana=7.3.2
+sudo apt install -y elasticsearch=7.5.0
+sudo apt install -y kibana=7.5.0
 
 #***********************************************************
 #Start elasticsearch service and configure it to automatically start at boot
@@ -53,7 +53,7 @@ sudo systemctl start kibana.service
 
 
 #Wazuh Kibana app
-sudo -u kibana /usr/share/kibana/bin/kibana-plugin install https://packages.wazuh.com/wazuhapp/wazuhapp-3.10.0_7.3.2.zip
+sudo -u kibana /usr/share/kibana/bin/kibana-plugin install https://packages.wazuh.com/wazuhapp/wazuhapp-3.10.2_7.5.0.zip
 
 #***********************************************************
 # Install Suricata
@@ -79,31 +79,36 @@ curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
 sudo echo "deb https://packages.wazuh.com/3.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
 sudo apt update
 sudo apt install -y wazuh-agent
-sudo sed -i 's/MANAGER_IP/wazuh01.dev.cloudforums.net/' /var/ossec/etc/ossec.conf 
+sudo sh -c "/var/ossec/bin/agent-auth -m wazuh01.mars.gov"
+sudo sed -i 's/MANAGER_IP/wazuh01.mars.gov/' /var/ossec/etc/ossec.conf 
 sudo systemctl start wazuh-agent
-
-#***********************************************************
-#Configure Kibana
-#***********************************************************
-
-echo 'server.host: "0.0.0.0"' >> /etc/kibana/kibana.yml
-echo 'logging.dest: "/var/log/kibana/kibana.log"' >> /etc/kibana/kibana.yml
-mkdir /var/log/kibana
-sudo touch /var/log/kibana/kibana.log
-systemctl restart kibana
 
 #***********************************************************
 #Configure elasticsearch
 #***********************************************************
 
-echo 'server.host: "0.0.0.0"' >> /etc/elasticsearch/elasticsearch.yml
+echo 'network.host: "0.0.0.0"' >> /etc/elasticsearch/elasticsearch.yml
 echo 'discovery.type: single-node' >> /etc/elasticsearch/elasticsearch.yml
 systemctl restart elasticsearch
+
+sleep 5s
+#***********************************************************
+#Configure Kibana
+#***********************************************************
+
+echo 'server.host: "0.0.0.0"' >> /etc/kibana/kibana.yml
+#echo 'logging.dest: "/var/log/kibana/kibana.log"' >> /etc/kibana/kibana.yml
+#mkdir /var/log/kibana
+#sudo touch /var/log/kibana/kibana.log
+systemctl restart kibana
+
 
 #***********************************************************
 # Join Wazuh Agent
 #***********************************************************
 
+#replace wazuh server with your hostname
+
 sleep 90s
-sudo sh -c "/var/ossec/bin/agent-auth -m wazuh01.dev.cloudforums.net"
+sudo sh -c "/var/ossec/bin/agent-auth -m your_wazuh_server"
 
