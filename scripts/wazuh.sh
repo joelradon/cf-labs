@@ -129,7 +129,7 @@ sudo apt -y update
 #***********************************************************
 #Install Filebeat
 #***********************************************************
-sudo apt install -y filebeat=7.3.2
+sudo apt install -y filebeat=7.5.0
 
 #***********************************************************
 #Download Filebeat config file to forward logs
@@ -141,10 +141,14 @@ sudo sh -c "curl -s https://packages.wazuh.com/3.x/filebeat/wazuh-filebeat-0.1.t
 
 
 #***********************************************************
-#Edit Filebeat config file to point to Elastic Server IP (In this lab environment I am using 127.0.0.1)
+#Edit Filebeat config file to point to Elastic Server IP (changed in a later step)
 #***********************************************************
 
 sudo sed -i 's/YOUR_ELASTIC_SERVER_IP/127.0.0.1/' /etc/filebeat/filebeat.yml
+
+#Replace YOUR_ELASTIC_SERVER with your elastic server hostname or IP. Comment this line out if you are using localhost
+
+#sudo sed -i 's/127.0.0.1/YOUR_ELASTIC_SERVER/' /etc/filebeat/filebeat.yml
 
 #***********************************************************
 #Start Filebeat service and configure it to automatically start at boot
@@ -199,4 +203,4 @@ sudo systemctl restart wazuh-manager
 
 
 
-sudo sed -i 's/127.0.0.1/elastic01.dev.cloudforums.net/' /etc/filebeat/filebeat.yml
+
